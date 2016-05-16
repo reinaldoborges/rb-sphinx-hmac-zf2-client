@@ -9,14 +9,16 @@ use Zend\Http\Exception\RuntimeException;
 
 use RB\Sphinx\Hmac\HMAC;
 use RB\Sphinx\Hmac\HMACSession;
-use RB\Sphinx\Hmac\Zend\Server\HMACUriAdapter;
-use RB\Sphinx\Hmac\Zend\Server\HMACHeaderAdapter;
-use RB\Sphinx\Hmac\Zend\Server\HMACSessionHeaderAdapter;
 
 class HMACHttpClient extends Client {
 	
 	const HMAC_HEADER = 0;
 	const HMAC_URI = 1;
+	
+	const VERSION = 1;
+	const HEADER_NAME = 'HMAC-Authentication';
+	const HEADER_NAME_SESSION = 'HMAC-Authentication-Session';
+	const URI_PARAM_NAME = "hmacauthentication";
 	
 	protected $hmacMode = self::HMAC_HEADER;
 	
@@ -59,7 +61,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Início de sessão com header adicional (sem BODY)
 		 */
-		$sessionRequest->getHeaders()->addHeaderLine(HMACSessionHeaderAdapter::HEADER_NAME_SESSION, 'Start');
+		$sessionRequest->getHeaders()->addHeaderLine(self::HEADER_NAME_SESSION, 'Start');
 		$sessionRequest->setContent('');
 		
 		/**
@@ -75,7 +77,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Recuperar header com assinatura HMAC
 		 */
-		$header = $response->getHeaders()->get(HMACHeaderAdapter::HEADER_NAME);
+		$header = $response->getHeaders()->get(self::HEADER_NAME);
 		
 		if( $header === false )
 			throw new RuntimeException('HMAC não está presente na resposta');
@@ -93,7 +95,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Verificar versão do protocolo
 		*/
-		if( $versao != HMACHeaderAdapter::VERSION )
+		if( $versao != self::VERSION )
 			throw new RuntimeException('HMAC da resposta é inválido (versão incorreta)');
 		
 		/**
@@ -139,12 +141,12 @@ class HMACHttpClient extends Client {
 		/**
 		 * Header de autenticação (protocolo versão 1)
 		*/
-		$headerAuth = HMACHeaderAdapter::VERSION    // versão do protocolo
+		$headerAuth = self::VERSION    // versão do protocolo
 			. ':' . $this->hmac->getKeyId()         // ID da chave/aplicação/cliente
 			. ':' . $this->hmac->getNonceValue()    // nonce
 			. ':' . $assinaturaHmac;                // HMAC Hash
 		
-		$request->getHeaders()->addHeaderLine(HMACHeaderAdapter::HEADER_NAME, $headerAuth);
+		$request->getHeaders()->addHeaderLine(self::HEADER_NAME, $headerAuth);
 		
 	}
 
@@ -196,7 +198,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Parâmetro de autenticação (protocolo versão 1)
 		*/
-		$authParam = HMACHeaderAdapter::VERSION    // versão do protocolo
+		$authParam = self::VERSION    // versão do protocolo
 			. ':' . $this->hmac->getKeyId()         // ID da chave/aplicação/cliente
 			. ':' . $this->hmac->getNonceValue()    // nonce
 			. ':' . $assinaturaHmac;                // HMAC Hash
@@ -205,7 +207,7 @@ class HMACHttpClient extends Client {
 		 * Acrescentar parâmetro HMAC na URI original
 		 */
 		$this->hmacSignedUri = true;
-		$request->getQuery()->offsetSet(HMACUriAdapter::URI_PARAM_NAME,$authParam);
+		$request->getQuery()->offsetSet(self::URI_PARAM_NAME,$authParam);
 		
 		$uri = $request->getUriString()
 				. (strpos($request->getUriString(),'?')===false? ($request->getQuery()->count() > 0? '?' : NULL):'&')
@@ -237,10 +239,10 @@ class HMACHttpClient extends Client {
 		/**
 		 * Header de autenticação (protocolo versão 1)
 		*/
-		$headerAuth = HMACHeaderAdapter::VERSION    // versão do protocolo
+		$headerAuth = self::VERSION    // versão do protocolo
 			. ':' . $assinaturaHmac;                // HMAC Hash
 	
-		$request->getHeaders()->addHeaderLine(HMACHeaderAdapter::HEADER_NAME, $headerAuth);
+		$request->getHeaders()->addHeaderLine(self::HEADER_NAME, $headerAuth);
 	
 	}
 	
@@ -253,7 +255,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Recuperar header com assinatura HMAC
 		 */
-		$header = $response->getHeaders()->get(HMACHeaderAdapter::HEADER_NAME);
+		$header = $response->getHeaders()->get(self::HEADER_NAME);
 		
 		if( $header === false )
 			throw new RuntimeException('HMAC não está presente na resposta');
@@ -270,7 +272,7 @@ class HMACHttpClient extends Client {
 		/**
 		 * Verificar versão do protocolo
 		*/
-		if( $versao != HMACHeaderAdapter::VERSION )
+		if( $versao != self::VERSION )
 			throw new RuntimeException('HMAC da resposta é inválido (versão incorreta)');
 		
 		/**
