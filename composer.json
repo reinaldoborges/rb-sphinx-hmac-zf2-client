@@ -21,6 +21,16 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/reinaldoborges/rb-sphinx-hmac-zf2-client.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/reinaldoborges/rb-sphinx-hmac.git"
+        }
+    ],
     "extra": {
         "branch-alias": {
             "dev-master": "0.1-dev",
@@ -30,10 +40,7 @@
     "autoload-dev": {
         "psr-4": {
             "ZendTest\\Http\\": "test/"
-        },
-        "classmap": [
-            "./Module.php"
-        ]
+        }
     },
     "require-dev": {
         "phpunit/PHPUnit": "~4.0"
