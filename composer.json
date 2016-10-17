@@ -15,9 +15,9 @@
         }
     },
     "require": {
-        "php": ">=5.5",
-        "rb/sphinx-hmac": "dev-develop",
-        "zendframework/zend-http": "~2.5"
+        "php": ">=5.3",
+        "rb/sphinx-hmac": "dev-php-5.3",
+        "zendframework/zend-http": "2.2.10"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
