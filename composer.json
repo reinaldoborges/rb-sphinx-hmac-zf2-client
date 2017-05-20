@@ -35,7 +35,7 @@
         "branch-alias": {
             "dev-master": "0.1-dev",
             "dev-develop": "0.1-dev",
-            "dev-php-5.3": "php-5.3"
+            "dev-php-5.3": "php53-dev"
         }
     },
     "autoload-dev": {
